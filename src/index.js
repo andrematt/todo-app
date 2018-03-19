@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 class Tasklist extends React.Component {	
+	//qua ok: anche se è un oggetto viene gestito da tasks[i].name
 	render(){
 		var structuredData=[];
-		for (var i=0; i<this.props.data.length; i++){
+		for (var i=0; i<this.props.tasks.length; i++){
  			structuredData.push(
  			<li>
- 				{this.props.data[i]}
+ 				{this.props.tasks[i].name}
+ 				"son of: "
+ 				{this.props.tasks[i].parentTask}
  			</li>
  			);
  		}
@@ -21,15 +24,15 @@ class Tasklist extends React.Component {
 
 class TasklistSelect extends React.Component {	
 	render(){ //devi fare un oggetto jsx per poterlo restituire
-
-		let structuredData=this.props.value.map(function (value, index) {
+		console.log(this.props.tasks);
+		let structuredData=this.props.tasks.map(function (value, index) {
 			return(
-				<option value={index+1}>{value}</option>
+				<option value={index+1}>{[value.name]}</option>
 			);
 		});
 
 		return( 
-			<select>
+			<select id="select-parent">
 			<option value={0}>none</option>	
 			{structuredData}
 			</select>
@@ -43,15 +46,24 @@ class Container extends React.Component {
     super(props);
     this.state = {
    		pageTitle:"Task Manager",
-   		myTasks: [], 
+   		myTasks: [{
+   			name: "",
+   			parentTask: null,
+   		}], 
     }
   }
 
   handleClick(){
-  	let inputData = document.getElementById('inputData').value
+  	let inputData = document.getElementById('inputData').value;
+  	let inputParent = document.getElementById('select-parent').value;
   	let taskClone = this.state.myTasks.slice();
-		taskClone.push(inputData);
-  	this.setState({myTasks: taskClone });
+  	let newTask={
+  		name: inputData,
+   		parentTask: inputParent,
+   		level: 0,
+  	};
+		taskClone.push(newTask);
+  	this.setState({myTasks: taskClone});
   }
 
  	render(){
@@ -64,10 +76,10 @@ class Container extends React.Component {
 				<input id="inputData"></input>
 				SubTask of:
 		
-				<TasklistSelect value={this.state.myTasks}/>
+				<TasklistSelect tasks={this.state.myTasks}/>
 				
 				</h3>
-				<Tasklist data={this.state.myTasks}/>
+				<Tasklist tasks={this.state.myTasks}/>
 			</div>
 		);
 	}
