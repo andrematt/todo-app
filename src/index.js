@@ -46,12 +46,12 @@ class Container extends React.Component {
     super(props);
     this.state = {
    		pageTitle:"Task Manager",
-   		myTasks: [{
-   			name: "",
-   			parentTask: null,
-   		}], 
+   		myTasks: [], 
     }
   }
+
+
+
 
   handleClick(){
   	let inputData = document.getElementById('inputData').value;
@@ -60,11 +60,12 @@ class Container extends React.Component {
   	let newTask={
   		name: inputData,
    		parentTask: inputParent,
-   		level: 0,
+   		level: getParentLevel(inputParent, this),
   	};
 		taskClone.push(newTask);
   	this.setState({myTasks: taskClone});
   }
+
 
  	render(){
 		return(
@@ -91,3 +92,17 @@ ReactDOM.render(
   <Container />,
   document.getElementById('root')
 );
+
+ function getParentLevel(parentName, stateObj){
+	let parentObj;
+	//incapsulalo in una funct sennò si lamenta che non fa return
+	stateObj.state.myTasks.find(function (element){
+		parentObj = element.name==='parentName';
+	});
+	if(typeof parentObj !== "undefined") {
+		return parentObj.level;
+	} 
+	else {
+		return 0;
+	}
+	}
