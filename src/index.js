@@ -27,13 +27,14 @@ class TasklistSelect extends React.Component {
 		console.log(this.props.tasks);
 		let structuredData=this.props.tasks.map(function (value, index) {
 			return(
-				<option value={index+1}>{[value.name]}</option>
+				//<option value={index+1}>{[value.name]}</option>
+				<option value={[value.name]}>{[value.name]}</option>
 			);
 		});
 
 		return( 
 			<select id="select-parent">
-			<option value={0}>none</option>	
+			<option value={"none"}>none</option>	
 			{structuredData}
 			</select>
 		);
@@ -60,7 +61,7 @@ class Container extends React.Component {
   	let newTask={
   		name: inputData,
    		parentTask: inputParent,
-   		level: getParentLevel(inputParent, this),
+   		level: getParentLevel(inputParent, this.state.myTasks),
   	};
 		taskClone.push(newTask);
   	this.setState({myTasks: taskClone});
@@ -95,14 +96,13 @@ ReactDOM.render(
 
  function getParentLevel(parentName, stateObj){
 	let parentObj;
-	//incapsulalo in una funct sennò si lamenta che non fa return
-	stateObj.state.myTasks.find(function (element){
-		parentObj = element.name==='parentName';
+	parentObj=stateObj.find(function (element){
+		return element.name===parentName;
 	});
 	if(typeof parentObj !== "undefined") {
-		return parentObj.level;
+		return parentObj.level+1;
 	} 
 	else {
-		return 0;
+		return 1;
 	}
 	}
