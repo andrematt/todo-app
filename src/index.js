@@ -8,7 +8,7 @@ class Tasklist extends React.Component {
 		var structuredData=[];
 		for (var i=0; i<this.props.tasks.length; i++){
  			structuredData.push(
- 			<li>
+ 			<li level={this.props.tasks[i].level}>
  				{this.props.tasks[i].name}
  				"son of: "
  				{this.props.tasks[i].parentTask}
@@ -62,13 +62,25 @@ class Container extends React.Component {
   		name: inputData,
    		parentTask: inputParent,
    		level: getParentLevel(inputParent, this.state.myTasks),
+   		sons: [],
   	};
-		taskClone.push(newTask);
+  	//se è figlio di qualcuno aggiungerlo ai sons, altrimenti pushalo normalmente
+  	if(inputParent==='none'){
+			taskClone.push(newTask);
+		}
+		else {
+			console.log("taskclone: "+taskClone);
+			taskClone[1].inputParent.sons.push(newTask);
+		}
   	this.setState({myTasks: taskClone});
   }
 
 
  	render(){
+ 		let sortedTasks = this.state.myTasks;
+ 		sortedTasks.sort(function (a, b) {
+  		return a.level - b.level;
+		});
 		return(
 			<div className="app">
 				<h1>{this.state.pageTitle}</h1>
@@ -78,10 +90,10 @@ class Container extends React.Component {
 				<input id="inputData"></input>
 				SubTask of:
 		
-				<TasklistSelect tasks={this.state.myTasks}/>
+				<TasklistSelect tasks={sortedTasks}/>
 				
 				</h3>
-				<Tasklist tasks={this.state.myTasks}/>
+				<Tasklist tasks={sortedTasks}/>
 			</div>
 		);
 	}
