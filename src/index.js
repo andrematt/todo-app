@@ -2,7 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Tasklist extends React.Component {	
+class Tasklist extends React.Component {
+	
+	renderSons(element) {
+		if (element.sons.length>0){
+			var sons=[];
+			for (var i=0; i<element.sons.length; i++){
+ 			sons.push(
+ 			<li level={element.sons[i].level}>
+ 				{element.sons[i].name}
+ 				"son of: "
+ 				{element.sons[i].parentTask}
+ 				{this.renderSons(element.sons[i])}
+ 			</li>
+ 			);
+ 			return sons;
+ 		}
+	}
+}
 	//qua ok: anche se è un oggetto viene gestito da tasks[i].name
 	render(){
 		var structuredData=[];
@@ -12,6 +29,7 @@ class Tasklist extends React.Component {
  				{this.props.tasks[i].name}
  				"son of: "
  				{this.props.tasks[i].parentTask}
+ 				{this.renderSons(this.props.tasks[i])}
  			</li>
  			);
  		}
@@ -69,8 +87,16 @@ class Container extends React.Component {
 			taskClone.push(newTask);
 		}
 		else {
-			console.log("taskclone: "+taskClone);
-			taskClone[1].inputParent.sons.push(newTask);
+			//trova posizione dell'array nella quale l'oggetto ha come nome inputParent	
+			let findIndex=-1;
+			taskClone.find(function (taskCloneElement, index){
+				if (taskCloneElement.name===inputParent){
+					findIndex=index;
+					return;
+				}
+			});
+			//aggiungi l'oggetto insierito tra i sons di quella quella posizione
+			taskClone[findIndex].sons.push(newTask);
 		}
   	this.setState({myTasks: taskClone});
   }
