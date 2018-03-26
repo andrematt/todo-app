@@ -16,8 +16,8 @@ class Tasklist extends React.Component {
  				{this.renderSons(element.sons[i])}
  			</li>
  			);
- 			return sons;
  		}
+ 		return sons;
 	}
 }
 	//qua ok: anche se è un oggetto viene gestito da tasks[i].name
@@ -41,14 +41,39 @@ class Tasklist extends React.Component {
 
 
 class TasklistSelect extends React.Component {	
+addSons(element, elementArr){
+	console.log(element);
+		for (let i=0; i<element.sons.length; i++){
+			elementArr.push(element.sons[i].name);
+		}
+		return elementArr;
+	}
+
 	render(){ //devi fare un oggetto jsx per poterlo restituire
-		console.log(this.props.tasks);
+		let elements=this.props.tasks;
+		let rawData=[];
+		for (let i=0; i<elements.length; i++){
+			rawData.push(elements[i].name);
+			if (elements[i].sons.length>0){
+				rawData=this.addSons(elements[i], rawData);
+			}
+		}
+		let structuredData=rawData.map(function (value){
+			return(
+					<option value={[value]}>{[value]}</option>
+				);
+		});
+		/*
 		let structuredData=this.props.tasks.map(function (value, index) {
 			return(
 				//<option value={index+1}>{[value.name]}</option>
+				<test>
 				<option value={[value.name]}>{[value.name]}</option>
+				<option value={this.testSons(elements)}></option>
+				</test>
 			);
 		});
+		*/
 
 		return( 
 			<select id="select-parent">
