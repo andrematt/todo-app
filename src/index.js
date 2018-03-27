@@ -113,14 +113,12 @@ class Container extends React.Component {
 		}
 		else {
 			//trova posizione dell'array nella quale l'oggetto ha come nome inputParent	
-			let findIndex=-1;
-			taskClone.find(function (taskCloneElement, index){
-				if (taskCloneElement.name===inputParent){
-					findIndex=index;
-					return;
-				}
-			});
+			//cerca ricorsivamente in ogni posizione finchè non ha finito i sons del primo valore,
+			//poi passa al successivo
+		
+			let findIndex=recursiveSearch(taskClone, inputParent);
 			//aggiungi l'oggetto insierito tra i sons di quella quella posizione
+			console.log(findIndex);
 			taskClone[findIndex].sons.push(newTask);
 		}
   	this.setState({myTasks: taskClone});
@@ -169,3 +167,17 @@ ReactDOM.render(
 		return 1;
 	}
 	}
+
+		function recursiveSearch(element, parent) {
+			let result=element.findIndex(function (data){
+				console.log(data.name);
+				console.log(parent);
+				return data.name===parent;  //condizione di terminazione
+			});
+			if (result !== -1) {
+				return result;
+			}
+			else {
+				recursiveSearch(element.sons, parent);
+			}
+		}
