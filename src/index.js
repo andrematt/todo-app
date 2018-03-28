@@ -42,7 +42,6 @@ class Tasklist extends React.Component {
 
 class TasklistSelect extends React.Component {	
 addSons(element, elementArr){
-	console.log(element);
 		for (let i=0; i<element.sons.length; i++){
 			elementArr.push(element.sons[i].name);
 		}
@@ -115,10 +114,9 @@ class Container extends React.Component {
 			//trova posizione dell'array nella quale l'oggetto ha come nome inputParent	
 			//cerca ricorsivamente in ogni posizione finchè non ha finito i sons del primo valore,
 			//poi passa al successivo
-		
+			console.log(taskClone);
 			let findIndex=recursiveSearch(taskClone, inputParent);
 			//aggiungi l'oggetto insierito tra i sons di quella quella posizione
-			console.log(findIndex);
 			taskClone[findIndex].sons.push(newTask);
 		}
   	this.setState({myTasks: taskClone});
@@ -169,15 +167,40 @@ ReactDOM.render(
 	}
 
 		function recursiveSearch(element, parent) {
+			var found=false;
+			let result;
+			for (let i=0;i<element.length;i++){
+				if (element[i].name===parent){
+					found=true;
+					result=i;
+					break;
+				}
+				else {
+					console.log("else");
+					if (element[i].sons.length>0){
+						console.log("chiamo ricorsivo");
+						recursiveSearch(element[i].sons, parent);
+					}
+				}
+			};
+			if (found){
+				console.log("argh");
+				return result;
+			}
+		}
+			/*
 			let result=element.findIndex(function (data){
 				console.log(data.name);
 				console.log(parent);
 				return data.name===parent;  //condizione di terminazione
 			});
+			console.log(result);
 			if (result !== -1) {
+				found=true;
 				return result;
 			}
 			else {
-				recursiveSearch(element.sons, parent);
+				recursiveSearch(data.sons, parent);
 			}
-		}
+			*/
+	
