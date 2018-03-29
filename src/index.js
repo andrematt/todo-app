@@ -105,6 +105,7 @@ class Container extends React.Component {
    		parentTask: inputParent,
    		level: getParentLevel(inputParent, this.state.myTasks),
    		sons: [],
+   		path: getPath(inputParent, this.state.myTasks, this.state.myTasks.length),
   	};
   	//se è figlio di qualcuno aggiungerlo ai sons, altrimenti pushalo normalmente
   	if(inputParent==='none'){
@@ -166,6 +167,31 @@ ReactDOM.render(
 	}
 	}
 
+	function getPath(parentName, stateObj, myPosition){
+		let parentObj;
+		let resultPath=[];
+		parentObj=stateObj.find(function (element){ //find parent object and get his path
+			return element.name===parentName;
+		});
+		if(typeof parentObj !== "undefined") { //if it exists, push to path
+			resultPath.push(parentObj.path);
+			//the last part of the path is the position of this element in the "sons" array
+			//find...
+		} 
+		else { //if element has no parent, the path is the position in the main state array
+		resultPath.push(myPosition); 
+		}
+		return resultPath;
+		}
+
+		/* RecursiveSearch
+		restituisce un array contenente la posizione nello state
+		dell'elemento padre di quello passato con parent. 
+		La posizione è indicata tramite gli indici degli elementi:
+		ogni nuovo indice rappresenta un livello di profondità in
+		più nella struttura gerarchica.
+		*/
+
 		function recursiveSearch(element, parent) {
 			var found=false;
 			let result;
@@ -184,7 +210,6 @@ ReactDOM.render(
 				}
 			};
 			if (found){
-				console.log("argh");
 				return result;
 			}
 		}
