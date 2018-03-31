@@ -100,12 +100,16 @@ class Container extends React.Component {
   	let inputData = document.getElementById('inputData').value;
   	let inputParent = document.getElementById('select-parent').value;
   	let taskClone = this.state.myTasks.slice();
-  	let newTask={
+/* rifare tutto: getParentLevel e getPath non funzionano in modo ricorsivo. 
+usare solo recursive search (farla chiamare da getParentLevel e getPath) 
+e fare restituire l'intero elemento padre: così abbiamo path e level e si 
+può pushare nella posizione giusta tramite switch */
+  	let newTask= {
   		name: inputData,
    		parentTask: inputParent,
    		level: getParentLevel(inputParent, this.state.myTasks),
    		sons: [],
-   		path: getPath(inputParent, this.state.myTasks, this.state.myTasks.length),
+   		path: getPath(inputParent, this.state.myTasks),
   	};
   	//se è figlio di qualcuno aggiungerlo ai sons, altrimenti pushalo normalmente
   	if(inputParent==='none'){
@@ -115,12 +119,30 @@ class Container extends React.Component {
 			//trova posizione dell'array nella quale l'oggetto ha come nome inputParent	
 			//cerca ricorsivamente in ogni posizione finchè non ha finito i sons del primo valore,
 			//poi passa al successivo
-			console.log(taskClone);
-			let findIndex=recursiveSearch(taskClone, inputParent);
+			//let findIndex=recursiveSearch(taskClone, inputParent);
+			console.log(newTask.level);
+			let path=newTask.path;
+			console.log(path);
+			if (newTask.level===2){
+				console.log("level 2");
+				taskClone[path[0]].sons.push(newTask);
+			}
+			if (newTask.level===3){
+				console.log("level 3");
+				console.log(taskClone[path[0]].sons[path[1]]);
+				taskClone[path[0]].sons[path[1]].push(newTask);
+			}
+
+
+			//let editedTaskClone=recursiveSearch(taskClone,inputParent, newTask);
 			//aggiungi l'oggetto insierito tra i sons di quella quella posizione
-			taskClone[findIndex].sons.push(newTask);
+			//this.setState({myTasks: editedTaskClone});
+
+			//let findIndex=newTask.path;
+			//taskClone[findIndex].sons.push(newTask);
 		}
-  	this.setState({myTasks: taskClone});
+		this.setState({myTasks: taskClone});
+  
   }
 
 
@@ -156,9 +178,10 @@ ReactDOM.render(
 
  function getParentLevel(parentName, stateObj){
 	let parentObj;
-	parentObj=stateObj.find(function (element){
-		return element.name===parentName;
-	});
+	parentObj=recursiveSearch(stateObj, parentName);
+	//perchè mi da undefined anche se recursiveSearch lo resituisce?
+	console.log("get parent level");
+	console.log("parent: "+parentObj);
 	if(typeof parentObj !== "undefined") {
 		return parentObj.level+1;
 	} 
@@ -167,49 +190,51 @@ ReactDOM.render(
 	}
 	}
 
-	function getPath(parentName, stateObj, myPosition){
+	function getPath(parentName, stateObj){
 		let parentObj;
 		let resultPath=[];
-		parentObj=stateObj.find(function (element){ //find parent object and get his path
-			return element.name===parentName;
-		});
+		let myPosition=stateObj.length;
+		parentObj=recursiveSearch(stateObj, parentName); //find parent object and get his path
+			console.log("get path");
+	console.log("parent: "+parentObj);
+		//perchè mi da undefined anche se recursiveSearch lo resituisce?
 		if(typeof parentObj !== "undefined") { //if it exists, push to path
-			resultPath.push(parentObj.path);
+			for (var i=0; i<parentObj.path.length; i++){
+				resultPath.push(parentObj.path[i]);
+			}
 			//the last part of the path is the position of this element in the "sons" array
-			//find...
+			resultPath.push(parentObj.sons.length); 
 		} 
 		else { //if element has no parent, the path is the position in the main state array
-		resultPath.push(myPosition); 
+			resultPath.push(myPosition); 
 		}
 		return resultPath;
 		}
 
 		/* RecursiveSearch
-		restituisce un array contenente la posizione nello state
-		dell'elemento padre di quello passato con parent. 
-		La posizione è indicata tramite gli indici degli elementi:
-		ogni nuovo indice rappresenta un livello di profondità in
-		più nella struttura gerarchica.
+		restituisce un elemento cercando ricorsivamente nei sons dell'obj tasks
 		*/
-
-		function recursiveSearch(element, parent) {
+		function recursiveSearch(tasks, toFind) {
+			var result=[];
 			var found=false;
-			let result;
-			for (let i=0;i<element.length;i++){
-				if (element[i].name===parent){
+			for (let i=0;i<tasks.length;i++){
+				if (tasks[i].name===toFind){
+					console.log("trovato!!");
 					found=true;
-					result=i;
+					result=tasks[i]
+					console.log(result);
 					break;
 				}
 				else {
 					console.log("else");
-					if (element[i].sons.length>0){
+					if (tasks[i].sons.length>0){
 						console.log("chiamo ricorsivo");
-						recursiveSearch(element[i].sons, parent);
+						recursiveSearch(tasks[i].sons, toFind);
 					}
 				}
 			};
 			if (found){
+				console.log("faccio return di " +result);
 				return result;
 			}
 		}
